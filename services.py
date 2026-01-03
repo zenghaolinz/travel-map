@@ -57,13 +57,27 @@ async def parse_trip_intent(user_input: str):
     url = "http://localhost:11434/api/chat"
 
     system_prompt = """
-    你是一个旅行助手。提取用户输入中的途经城市。
-    规则：
-    1. 严格输出 JSON。
-    2. 格式：{"locations": [{"name": "城市名", "transport_mode": "flight"}]}
-    3. transport_mode 可选: flight, car, train。默认 flight。
-    4. 不要输出任何多余文字。
-    """
+   你是一个旅行路线解析器。
+
+    任务：
+        从用户输入中，按【出发地 → 中转地 → 终点】顺序，
+        提取所有出现的【城市或地名】，包括起点。
+
+        规则：
+        1. 起点必须保留，不能省略。
+        2. 每一段“从 A 到 B”，A 和 B 都必须出现在 locations 中。
+        3. 严格按出现顺序输出。
+        4. 严格输出 JSON，不要解释。
+格式：
+{
+  "locations": [
+    {"name": "北京", "transport_mode": "flight"},
+    {"name": "上海", "transport_mode": "flight"},
+    {"name": "长沙", "transport_mode": "train"},
+    {"name": "娄底", "transport_mode": "car"}
+  ]
+}
+"""
 
     payload = {
         "model": "qwen3:8b",  # ⚠️ 如果觉得慢，改成 "qwen3:4b"
